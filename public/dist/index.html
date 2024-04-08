@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Requisição</title>
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+  <header>
+    <h1>SGP 3.0</h1>
+  </header>
+  
+  <div class="formReq inactive">
+    <h2>X</h2>
+    <form action="">
+      <label for="employee_id">Crachá: </label>
+      <input id="employee_id" name="employee_id" placeholder="Somente números" type="number" autofocus required>
+
+      <label for="part_number">Peça: </label>
+      <input id="part_number" name="part_number" placeholder="Identificador da peça" type="text" required>
+
+      <label for="operation">Operação: </label>
+      <input id="operation" name="operation" placeholder="Somente números" type="number" required>
+
+      <label for="origin" >Máquina de origem: </label>
+      <input id="origin" name="origin" placeholder="Caso nao houver, deixar em branco" type="number">
+
+      <label for="destination" >Máquina de destino: </label>
+      <input id="destination" name="destination" placeholder="Somente números" type="number" required>
+
+      <label for="log_description" >Logistica: </label>
+      <input name="log_description" id="log_description" placeholder="Descreva" type="text" required>
+
+      <label for="qual_description" >Qualidade: </label>
+      <input name="qual_description" id="qual_description" placeholder="Descreva" type="text">
+
+      <label for="eng_description" >Engenharia: </label>
+      <input name="eng_description" id="eng_description" placeholder="Descreva" type="text">
+
+      <label for="man_description" >Manutenção: </label>
+      <input name="man_description" id="man_description" placeholder="Descreva" type="text">
+      
+      <button id="submitReq" type="submit">Criar</button>
+      
+    </form>
+  </div>
+
+  <button id="buttonReq" type="button">Criar Requisição</button>
+
+  <input type="text" id="search" placeholder="Procurar" >
+
+  <main>
+
+    
+  </main>
+    
+</body>
+<script src="js/index_events.js"></script>
+<script src="js/index_websocket.js"></script>
+</html>

@@ -1,0 +1,46 @@
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 5px;
+}
+
+label {
+    display: block;
+    margin: 10px 0px;
+}
+
+input {
+    border-radius: 10px;
+    width: 250px;
+    height: 30px;
+    text-transform: uppercase
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+button {
+    display: block;
+}
+
+#submitReq, #submitUpdateQual, #submitUpdateEng, #submitUpdateMan, #submitUpdateLog{
+    display: inline;
+    margin-top: 20px;
+    width: 200px;
+    height: 40px;
+    right: 0;
+    border: 0;
+    color: bisque;
+    background-color:crimson;
+    border-radius: 30px;
+}
+

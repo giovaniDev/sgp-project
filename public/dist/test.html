@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Requisição</title>
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/test.css">
+</head>
+
+<body>
+  <header><h1>SGP 3.0</h1></header>
+  
+  <main>
+    <form action="">
+      <p>Logistica</p>
+      <label for="id_call">Requisição</label>
+      <input name="id_call" id="id_call" type="number">
+      <label for="log_check_id">Crachá</label>
+      <input name="log_check_id" id="log_check_id" type="number">
+      <button type="submit" id="submitUpdateLog" >Baixar</button>
+    </form>
+
+    <form action="">
+      <p>Qualidade</p>
+            <label for="id_call">Requisição</label>
+      <input name="id_call" id="id_call" type="number">
+      <label for="qual_check_id">Crachá</label>
+      <input name="qual_check_id" id="qual_check_id" type="number">
+      <button type="submit" id="submitUpdateQual" >Baixar</button>
+    </form>
+
+    <form action="">
+      <p>Engenharia</p>
+      <label for="id_call">Requisição</label>
+      <input name="id_call" id="id_call" type="number">
+      <label for="eng_check_id">Crachá</label>
+      <input name="eng_check_id" id="eng_check_id" type="number">
+      <button type="submit" id="submitUpdateEng" >Baixar</button>
+    </form>
+
+    <form action="">
+      <p>Manutenção</p>
+          <label for="id_call">Requisição</label>
+        <input name="id_call" id="id_call" type="number">
+        <label for="man_check_id">Crachá</label>
+        <input name="man_check_id" id="man_check_id" type="number">
+        <button type="submit" id="submitUpdateMan" >Baixar</button>
+    </form>
+  </main>
+    
+</body>
+<script src="js/test_websocket.js"></script>
+<script src="js/test_events.js"></script>
+
+</html>
