@@ -50,4 +50,5 @@ h2.addEventListener("click", () => {
 
 window.addEventListener("beforeunload", (e) => {
     form.reset()
+    document.querySelector("#search").value = ""
 })

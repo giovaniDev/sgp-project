@@ -1,5 +1,4 @@
 const form = document.getElementsByTagName("form")
-console.log(form)
 
 function getFormReq(button) {
     const formData = new FormData(form[button])

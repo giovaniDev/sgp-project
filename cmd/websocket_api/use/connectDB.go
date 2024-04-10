@@ -3,24 +3,17 @@ package use
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
-// var (
-// 	host     = "localhost"
-// 	port     = "5432"
-// 	user     = "postgres"
-// 	password = "postgres"
-// 	dbname   = "postgres"
-// )
-
 var (
-	host     = "dpg-co7cqln79t8c73a3u5lg-a"
-	port     = "5432"
-	user     = "girvx"
-	password = "UZPd4bVvc6TBzA1mduSmyIBVvkc415Sn"
-	dbname   = "testsgp"
+	host     = os.Getenv("POSTGRES_HOST")
+	port     = os.Getenv("POSTGRES_PORT")
+	user     = os.Getenv("POSTGRES_USER")
+	password = os.Getenv("POSTGRES_PASSWORD")
+	dbname   = os.Getenv("POSTGRES_DBNAME")
 )
 
 func ConnectDB() (*sql.DB, error) {

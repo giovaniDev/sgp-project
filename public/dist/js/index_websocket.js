@@ -57,6 +57,45 @@ function formatDateTime(time_stamp) {
     }
 }
 
+function formatDateTimeList(input) {
+    input.forEach((data) => {
+        data.created_at = formatDateTime(data.created_at)
+        if (!String(data.log_check_datetime_at).startsWith("000")) {
+            data.log_check_datetime_at = formatDateTime(data.log_check_datetime_at)
+        }
+        if (!String(data.qual_check_datetime_at).startsWith("000")) {
+            data.qual_check_datetime_at = formatDateTime(data.qual_check_datetime_at)
+        }
+        if (!String(data.eng_check_datetime_at).startsWith("000")) {
+            data.eng_check_datetime_at = formatDateTime(data.eng_check_datetime_at)
+        }
+        if (!String(data.man_check_datetime_at).startsWith("000")) {
+            data.man_check_datetime_at = formatDateTime(data.man_check_datetime_at)
+        }
+    })
+
+    return input
+
+}
+
+function formatDateTimeOnCreate(data) {
+        data.created_at = formatDateTime(data.created_at)
+        if (!String(data.log_description).startsWith("000")) {
+            data.log_check_datetime_at = formatDateTime(data.log_check_datetime_at)
+        }
+        if (!String(data.qual_check_datetime_at).startsWith("000")) {
+            data.qual_check_datetime_at = formatDateTime(data.qual_check_datetime_at)
+        }
+        if (!String(data.eng_check_datetime_at).startsWith("000")) {
+            data.eng_check_datetime_at = formatDateTime(data.eng_check_datetime_at)
+        }
+        if (!String(data.man_check_datetime_at).startsWith("000")) {
+            data.man_check_datetime_at = formatDateTime(data.man_check_datetime_at)
+        }
+
+    return data
+}
+
 
 
 function updateCAllCard(call, sector) {
@@ -171,32 +210,12 @@ function renderCallCard(call) {
 
 }
 
-let formated = false
-
 function renderAllCalls(data) {
     const main = document.querySelector("main")
     let content = ""
     data.forEach((card) => {
-        if (!formated) {
-            card.created_at = formatDateTime(card.created_at)
-            if (!String(card.log_check_datetime_at).startsWith("000")) {
-                card.log_check_datetime_at = formatDateTime(card.log_check_datetime_at)
-            }
-            if (!String(card.qual_check_datetime_at).startsWith("000")) {
-                card.qual_check_datetime_at = formatDateTime(card.qual_check_datetime_at)
-            }
-            if (!String(card.eng_check_datetime_at).startsWith("000")) {
-                card.eng_check_datetime_at = formatDateTime(card.eng_check_datetime_at)
-            }
-            if (!String(card.man_check_datetime_at).startsWith("000")) {
-                card.man_check_datetime_at = formatDateTime(card.man_check_datetime_at)
-            }
-            
-        }
         content += renderCallCard(card)
-
     })
-    formated = true
     main.innerHTML = content
 }
 
@@ -225,7 +244,6 @@ function searchCalls(v) {
         String(e.eng_description).toUpperCase().startsWith(value)
 
     })
-    console.log(newList)
     return newList
 }
 
@@ -237,15 +255,15 @@ const listenWebSocket = () => {
             const emptyMain = document.querySelector("main .emptyMain")
             if (emptyMain) {
                 clearAllCAlls()
-                console.log("clear")
             }
 
-            data.call.created_at = formatDateTime(data.call.created_at)
+            const callFormated = formatDateTimeOnCreate(data.call)
+            list.unshift(callFormated)
+            const card = renderCallCard(callFormated)
             const main = document.querySelector("main")
-            const card = renderCallCard(data.call)
             main.insertAdjacentHTML("afterbegin", card)
-            list.unshift(data.call)
             displaySound("./sounds/oncreate.mp3")
+            return
         }
 
         if (data.event == "getAllCalls") {
@@ -253,11 +271,9 @@ const listenWebSocket = () => {
                 document.querySelector("main").innerHTML = `<h1 class="emptyMain">Não há requisições no momento</h1>`
                 return
             }
-            console.log(data.call)
-            renderAllCalls(data.call)
-
-            list = data.call
-        
+            list = formatDateTimeList(data.call)
+            renderAllCalls(list)
+            return 
         }
 
         if (data.event == "getCall") {
@@ -309,6 +325,7 @@ const listenWebSocket = () => {
     ws.onopen = () => {
         getInformationMachine()
         if (statusConnection) {
+            document.querySelector("#search").value = ""
             ws.send(JSON.stringify({event: "getAllCalls", call: { company: "" }}))
             console.log('connectecd')
             listenWebSocket()

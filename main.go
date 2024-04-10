@@ -309,7 +309,7 @@ func main() {
 
 	e := echo.New()
 
-	fmt.Println(os.Getenv(`DB_POSTGRES_PORT`))
+	fmt.Println(os.Getenv(`POSTGRES_PORT`))
 
 	public.RegisterHTML(e)
 

@@ -15,5 +15,7 @@ gonesis
 # vendor/
 # Go workspace file
 go.work
+prod.env
+dev.env
 
 .vscode/
