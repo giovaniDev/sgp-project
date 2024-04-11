@@ -3,7 +3,7 @@
 var remote = "wss://sgp-project.onrender.com"
 var local = "ws://192.168.1.15:3000"
 
-var conn = remote + `/ws?machine="ad123"&company="industria`
+var conn = local + `/ws?machine="ad123"&company=admin`
 
 var ws = new WebSocket(conn)
 
@@ -47,11 +47,16 @@ function removeInformationMachine() {
 
 const listenWebSocket = () => {
     ws.onmessage = function(e) {
-        let data = JSON.parse(e.data)
+        var data = JSON.parse(e.data)
 
         if (data.event == "updateCallQuality") {
             console.log(data.call.id_call + " " + data.event + " baixado")
             displaySound("./sounds/onupdate.mp3")
+        }
+
+        if (data.event == "getConnLength") {
+            document.querySelector("h3 p").textContent = data.conn_length
+            console.log(data.conn_length)
         }
 
         if (data.event == "updateCallEng") {
@@ -74,6 +79,7 @@ const listenWebSocket = () => {
 
     ws.onopen = () => {
         getInformationMachine()
+        ws.send(JSON.stringify({event: "getConnLength"}))
         if (statusConnection) {
             console.log('connectecd')
             listenWebSocket()
@@ -81,18 +87,22 @@ const listenWebSocket = () => {
     }
 
     ws.onerror = () => {
+        ws.send(JSON.stringify({event: "getConnLength"}))
         if (statusConnection) {
             retryWebSocketConnection()
         }
     }
 
     ws.onclose = () => {
-        ws.close(3001, "Fechando navegador!")
         retryWebSocketConnection()
         console.log('disconnected')
     }
 
 }
+
+window.addEventListener("close", () => {
+    ws.send(JSON.stringify({event: "getConnLength"}))
+})
 
 function retryWebSocketConnection() {
     const a = setInterval(() => {
@@ -101,6 +111,7 @@ function retryWebSocketConnection() {
             clearInterval(a)
             clearAllCAlls()
             ws.send(JSON.stringify({event: "getAllCalls", call: { company: "" }}))
+            ws.send(JSON.stringify({event: "getConnLength"}))
             listenWebSocket()
             console.log('reconnected')
         }

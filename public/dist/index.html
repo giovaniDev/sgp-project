@@ -16,38 +16,62 @@
   <div class="formReq inactive">
     <h2>X</h2>
     <form action="">
-      <label for="employee_id">Crachá: </label>
-      <input id="employee_id" name="employee_id" placeholder="Somente números" type="number" autofocus required>
+      <div>
+        <label for="employee_id">Crachá: </label>
+        <input id="employee_id" name="employee_id" placeholder="Somente números" type="number" autofocus required>
+      </div>
 
-      <label for="part_number">Peça: </label>
-      <input id="part_number" name="part_number" placeholder="Identificador da peça" type="text" required>
+      <div>
+        <label for="part_number"><p>Peça: </p> </label>
+        <input id="part_number" name="part_number" placeholder="Identificador da peça" type="text" required>
+      </div>
 
-      <label for="operation">Operação: </label>
-      <input id="operation" name="operation" placeholder="Somente números" type="number" required>
+      <div>
+        <label for="operation">Operação: </label>
+        <input id="operation" name="operation" placeholder="Somente números" type="number" required>
+      </div>
 
-      <label for="origin" >Máquina de origem: </label>
-      <input id="origin" name="origin" placeholder="Caso nao houver, deixar em branco" type="number">
+      <div>
+        <label for="operation">Urgente: </label>
+        <input id="urgent" name="urgent" placeholder="Somente números" type="checkbox" required>
+      </div>
 
-      <label for="destination" >Máquina de destino: </label>
-      <input id="destination" name="destination" placeholder="Somente números" type="number" required>
+      <div>
+        <label for="origin" >Origem: </label>
+        <input id="origin" name="origin" placeholder="Caso nao houver, deixar em branco" type="number">
+      </div>
 
-      <label for="log_description" >Logistica: </label>
-      <input name="log_description" id="log_description" placeholder="Descreva" type="text" required>
+      <div>
+        <label for="destination" >Destino: </label>
+        <input id="destination" name="destination" placeholder="Somente números" type="number" required>
+      </div>
 
-      <label for="qual_description" >Qualidade: </label>
-      <input name="qual_description" id="qual_description" placeholder="Descreva" type="text">
+      <div>
+        <label for="log_description" >Logistica: </label>
+        <input name="log_description" id="log_description" placeholder="Descreva" type="text" required>
+      </div>
 
-      <label for="eng_description" >Engenharia: </label>
-      <input name="eng_description" id="eng_description" placeholder="Descreva" type="text">
+      <div>
+        <label for="qual_description" >Qualidade: </label>
+        <input name="qual_description" id="qual_description" placeholder="Descreva" type="text">
+      </div>
 
-      <label for="man_description" >Manutenção: </label>
-      <input name="man_description" id="man_description" placeholder="Descreva" type="text">
+      <div>
+        <label for="eng_description" >Engenharia: </label>
+        <input name="eng_description" id="eng_description" placeholder="Descreva" type="text">
+      </div>
+
+      <div>
+        <label for="man_description" >Manutenção: </label>
+        <input name="man_description" id="man_description" placeholder="Descreva" type="text">
+      </div>
       
       <button id="submitReq" type="submit">Criar</button>
       
     </form>
   </div>
 
+ 
   <button id="buttonReq" type="button">Criar Requisição</button>
 
   <input type="text" id="search" placeholder="Procurar" >
@@ -56,7 +80,18 @@
 
     
   </main>
-    
+  
+  <footer>
+    <div>
+      <p>Em desenvolvimento por:</p>
+      <p>Giovani Rodrigues</p>
+    </div>
+
+    <div>
+      <p>Tecnologias utilizadas:</p>
+      <p>GoLang, Javascript, CSS, HTML e PostgreSQL</p>
+    </div>
+  </footer>
 </body>
 <script src="js/index_events.js"></script>
 <script src="js/index_websocket.js"></script>

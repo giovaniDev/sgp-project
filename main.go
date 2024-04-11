@@ -7,7 +7,7 @@ import (
 	"ordora/cmd/websocket_api/use"
 	"ordora/internal/db"
 	"ordora/public"
-	"os"
+	"strconv"
 
 	"nhooyr.io/websocket"
 
@@ -30,6 +30,11 @@ type ID struct {
 
 type Companies struct {
 	Company string `json:"company"`
+}
+
+type NumberConnections struct {
+	*E
+	ConnLength string `json:"conn_length"`
 }
 
 type GetCallSocketInput struct {
@@ -103,6 +108,8 @@ var (
 	clients map[*websocket.Conn]Adress = make(map[*websocket.Conn]Adress)
 )
 
+var numberConnections int64
+
 func handleWS(c echo.Context) error {
 
 	client, err := websocket.Accept(c.Response().Writer, c.Request(), &websocket.AcceptOptions{
@@ -120,28 +127,58 @@ func handleWS(c echo.Context) error {
 		Machine: c.QueryParams().Get("machine"),
 	}
 
-	fmt.Println("connections: ", clients)
+	numberConnections += 1
+
+	fmt.Println("connections: ", numberConnections)
 
 	ctx := context.Background()
 
 	for {
 
 		_, data, err := client.Read(c.Request().Context())
+		var e E
+		_ = json.Unmarshal(data, &e)
+
+		fmt.Println(e)
+
+		fmt.Printf("%+v\n", e)
 		if err != nil {
 			fmt.Println("disconnected")
-
 			delete(clients, client)
-			fmt.Println(clients)
+			numberConnections -= 1
+			var output NumberConnections
+			e.Event = "getConnLength"
+			output.E = &e
+			output.ConnLength = strconv.Itoa(int(numberConnections))
+			fmt.Println(output)
+			callJSON, _ := json.MarshalIndent(&output, "", "  ")
+
+			for cli := range clients {
+				a := clients[cli].Company
+				if a != "industria" {
+					cli.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+				}
+			}
+			fmt.Println("connections: ", numberConnections)
 			client.CloseNow()
 			break
 		}
 
-		var e E
-		_ = json.Unmarshal(data, &e)
-
-		fmt.Printf("%+v\n", e)
-
 		switch e.Event {
+
+		case string("getConnLength"):
+			var output NumberConnections
+			output.E = &e
+			output.ConnLength = strconv.Itoa(int(numberConnections))
+
+			callJSON, _ := json.MarshalIndent(&output, "", "  ")
+
+			for cli := range clients {
+				a := clients[cli].Company
+				if a != "industria" {
+					cli.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+				}
+			}
 
 		case string("getCall"):
 			var dataToStruct GetCallSocketInput
@@ -308,8 +345,6 @@ func handleWS(c echo.Context) error {
 func main() {
 
 	e := echo.New()
-
-	fmt.Println(os.Getenv(`POSTGRES_PORT`))
 
 	public.RegisterHTML(e)
 

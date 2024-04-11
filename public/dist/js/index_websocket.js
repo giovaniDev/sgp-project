@@ -3,7 +3,7 @@
 var remote = "wss://sgp-project.onrender.com"
 var local = "ws://192.168.1.15:3000"
 
-var conn = remote + `/ws?machine="ad123"&company="industria`
+var conn = local + `/ws?machine="ad123"&company=industria`
 
 var ws = new WebSocket(conn)
 
@@ -59,44 +59,27 @@ function formatDateTime(time_stamp) {
 
 function formatDateTimeList(input) {
     input.forEach((data) => {
-        data.created_at = formatDateTime(data.created_at)
-        if (!String(data.log_check_datetime_at).startsWith("000")) {
-            data.log_check_datetime_at = formatDateTime(data.log_check_datetime_at)
-        }
-        if (!String(data.qual_check_datetime_at).startsWith("000")) {
-            data.qual_check_datetime_at = formatDateTime(data.qual_check_datetime_at)
-        }
-        if (!String(data.eng_check_datetime_at).startsWith("000")) {
-            data.eng_check_datetime_at = formatDateTime(data.eng_check_datetime_at)
-        }
-        if (!String(data.man_check_datetime_at).startsWith("000")) {
-            data.man_check_datetime_at = formatDateTime(data.man_check_datetime_at)
-        }
+        formatDateTimeOnCreate(data)
     })
-
     return input
-
 }
 
 function formatDateTimeOnCreate(data) {
-        data.created_at = formatDateTime(data.created_at)
-        if (!String(data.log_description).startsWith("000")) {
-            data.log_check_datetime_at = formatDateTime(data.log_check_datetime_at)
-        }
-        if (!String(data.qual_check_datetime_at).startsWith("000")) {
-            data.qual_check_datetime_at = formatDateTime(data.qual_check_datetime_at)
-        }
-        if (!String(data.eng_check_datetime_at).startsWith("000")) {
-            data.eng_check_datetime_at = formatDateTime(data.eng_check_datetime_at)
-        }
-        if (!String(data.man_check_datetime_at).startsWith("000")) {
-            data.man_check_datetime_at = formatDateTime(data.man_check_datetime_at)
-        }
-
+    data.created_at = formatDateTime(data.created_at)
+    if (!String(data.log_check_datetime_at).startsWith("000")) {
+        data.log_check_datetime_at = formatDateTime(data.log_check_datetime_at)
+    }
+    if (!String(data.qual_check_datetime_at).startsWith("000")) {
+        data.qual_check_datetime_at = formatDateTime(data.qual_check_datetime_at)
+    }
+    if (!String(data.eng_check_datetime_at).startsWith("000")) {
+        data.eng_check_datetime_at = formatDateTime(data.eng_check_datetime_at)
+    }
+    if (!String(data.man_check_datetime_at).startsWith("000")) {
+        data.man_check_datetime_at = formatDateTime(data.man_check_datetime_at)
+    }
     return data
 }
-
-
 
 function updateCAllCard(call, sector) {
     const card = document.getElementById(String(call.id_call))
@@ -109,7 +92,6 @@ function updateCAllCard(call, sector) {
         <p class="created-at" >Encerrado por: ${String(call[`${sector}_check_id`])} - Giovani Rodrigues</p>
         <p class="created-at" >Em: ${call[`${sector}_check_datetime_at`]["date"]} as ${call[`${sector}_check_datetime_at`]["datetime"]} </p>
     `
-    
 }
 
 function renderCallCard(call) {
@@ -205,8 +187,8 @@ function renderCallCard(call) {
                     `}
                     
                     </div>
-                `           
-            return card
+                 `           
+    return card
 
 }
 
@@ -221,16 +203,8 @@ function renderAllCalls(data) {
 
 function clearAllCAlls() {
     const main = document.querySelector("main")
-
     main.innerHTML = ""
 }
-
-const search = document.getElementById("search")
-
-search.addEventListener("keyup", (e) => {
-    let valueSearch = String(e.target.value).toUpperCase()
-    renderAllCalls(searchCalls(valueSearch))
-})
 
 function searchCalls(v) {
     const value = String(v).toUpperCase()
@@ -251,6 +225,8 @@ function searchCalls(v) {
 const listenWebSocket = () => {
     ws.onmessage = function(e) {
         let data = JSON.parse(e.data)
+
+
         if (data.event == "createCall") {
             const emptyMain = document.querySelector("main .emptyMain")
             if (emptyMain) {
@@ -327,6 +303,7 @@ const listenWebSocket = () => {
         if (statusConnection) {
             document.querySelector("#search").value = ""
             ws.send(JSON.stringify({event: "getAllCalls", call: { company: "" }}))
+            ws.send(JSON.stringify({ event: "getConnLength"}))
             console.log('connectecd')
             listenWebSocket()
         }
@@ -338,13 +315,6 @@ const listenWebSocket = () => {
         }
     }
 
-    ws.onclose = () => {
-        ws.close(3001, "Fechando navegador!")
-        if (statusConnection) {
-            retryWebSocketConnection()
-        }
-        console.log('disconnected')
-    }
 
 }
 
@@ -389,6 +359,10 @@ window.addEventListener("scroll", () => {
 
 window.addEventListener("keypress", () => {
     //disconnectIdleness()
+})
+
+window.addEventListener("close", () => {
+    ws.send(JSON.stringify({event: "getConnLength"}))
 })
 
 

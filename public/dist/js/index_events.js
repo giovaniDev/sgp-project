@@ -47,6 +47,13 @@ h2.addEventListener("click", () => {
     form.parentElement.className = "formReq inactive animated-out"
 })
 
+const search = document.getElementById("search")
+
+search.addEventListener("keyup", (e) => {
+    let valueSearch = String(e.target.value).toUpperCase()
+    renderAllCalls(searchCalls(valueSearch))
+})
+
 
 window.addEventListener("beforeunload", (e) => {
     form.reset()
