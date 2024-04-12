@@ -17,6 +17,9 @@ let users = new Map()
 
 users.set(2477, "Giovani Rodrgues")
 
+
+Notification.requestPermission().then(function(permission) { console.log('permiss', permission)});
+
 function displaySound(s) {
     const audio = new Audio(s)
     audio.autoplay = true
@@ -238,6 +241,7 @@ const listenWebSocket = () => {
             const card = renderCallCard(callFormated)
             const main = document.querySelector("main")
             main.insertAdjacentHTML("afterbegin", card)
+            const not = new Notification("Nova requisição", { body: "Uma nova requisição numero " + data.call.id_call + " foi criada"})
             displaySound("./sounds/oncreate.mp3")
             return
         }
@@ -261,6 +265,7 @@ const listenWebSocket = () => {
             const index = list.findIndex(o => o.id_call === data.call.id_call)
             list[index].qual_check_datetime_at = data.call.qual_check_datetime_at
             list[index].qual_check_id = data.call.qual_check_id
+            const not = new Notification("Baixa", { body: "Requisição da qualidade numero " + data.call.id_call + " foi baixada"})
             displaySound("./sounds/onupdate.mp3")
             return
         }
@@ -271,6 +276,7 @@ const listenWebSocket = () => {
             const index = list.findIndex(o => o.id_call === data.call.id_call)
             list[index].eng_check_datetime_at = data.call.eng_check_datetime_at
             list[index].eng_check_id = data.call.eng_check_id
+            const not = new Notification("Baixa", { body: "Requisição da engenharia numero " + data.call.id_call + " foi baixada"})
             displaySound("./sounds/onupdate.mp3")
             return
         }
@@ -281,6 +287,10 @@ const listenWebSocket = () => {
             const index = list.findIndex(o => o.id_call === data.call.id_call)
             list[index].log_check_datetime_at = data.call.log_check_datetime_at
             list[index].log_check_id = data.call.log_check_id
+            Notification.requestPermission().then((result) => {
+                console.log(result);
+              });
+            const not = new Notification("Baixa", { body: "Requisição da logística numero " + data.call.id_call + " foi baixada"})
             displaySound("./sounds/onupdate.mp3")
             return
         }
@@ -291,6 +301,7 @@ const listenWebSocket = () => {
             const index = list.findIndex(o => o.id_call === data.call.id_call)
             list[index].man_check_datetime_at = data.call.man_check_datetime_at
             list[index].man_check_id = data.call.man_check_id
+            const not = new Notification("Baixa", { body: "Requisição da manutenção numero " + data.call.id_call + " foi baixada"})
             displaySound(".//sounds/onupdate.mp3")
             return
         }
@@ -314,8 +325,6 @@ const listenWebSocket = () => {
             retryWebSocketConnection()
         }
     }
-
-
 }
 
 function retryWebSocketConnection() {

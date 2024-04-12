@@ -12,7 +12,6 @@ let list = []
 let users = new Map()
 
 users.set(2477, "Giovani Rodrgues")
-users.set(2709, "Rafael")
 
 function displaySound(s) {
     const audio = new Audio(s)
