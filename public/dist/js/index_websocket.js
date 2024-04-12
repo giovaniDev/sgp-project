@@ -3,7 +3,7 @@
 var remote = "wss://sgp-project.onrender.com"
 var local = "ws://192.168.1.15:3000"
 
-var conn = remote + `/ws?machine="ad123"&company=industria`
+var conn = local + `/ws?machine="ad123"&company=industria`
 
 var ws = new WebSocket(conn)
 
@@ -330,6 +330,7 @@ const listenWebSocket = () => {
 
     ws.onopen = () => {
         getInformationMachine()
+        statusConnection = true
         if (statusConnection) {
             document.querySelector("#search").value = ""
             ws.send(JSON.stringify({event: "getAllCalls", call: { company: "" }}))
@@ -340,9 +341,17 @@ const listenWebSocket = () => {
     }
 
     ws.onerror = () => {
-        if (statusConnection) {
+        statusConnection = false
+        if (!statusConnection) {
             retryWebSocketConnection()
         }
+    }
+
+    ws.onclose = () => {
+        console.log("disconnected")
+        statusConnection = false
+        ws.close()
+        
     }
 }
 
@@ -350,6 +359,7 @@ function retryWebSocketConnection() {
     const a = setInterval(() => {
         ws = new WebSocket(conn)
         ws.onopen = () => {
+            statusConnection = true
             clearInterval(a)
             clearAllCAlls()
             ws.send(JSON.stringify({event: "getAllCalls", call: { company: "" }}))
@@ -374,19 +384,19 @@ function disconnectIdleness() {
         ws.close(3002, "ocioso")
         window.scroll(0, 0)
         statusConnection = false
-    }, 60000);
+    }, 30000);
 }
 
 body.addEventListener("mousemove", () => {
-    //disconnectIdleness()
+    disconnectIdleness()
 })
 
 window.addEventListener("scroll", () => {
-    //disconnectIdleness()
+    disconnectIdleness()
 })
 
 window.addEventListener("keypress", () => {
-    //disconnectIdleness()
+    disconnectIdleness()
 })
 
 window.addEventListener("close", () => {
