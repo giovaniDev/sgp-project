@@ -3,7 +3,7 @@
 var remote = "wss://sgp-project.onrender.com"
 var local = "ws://192.168.1.15:3000"
 
-var conn = remote + `/ws?machine="ad123"&company=admin`
+var conn = local + `/ws?machine="ad123"&company=admin`
 
 var ws = new WebSocket(conn)
 

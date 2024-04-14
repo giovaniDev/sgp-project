@@ -1,6 +1,11 @@
 function getFormReq() {
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
+    if (data.urgent === "on") {
+        data.urgent = true
+    } else {
+        data.urgent = false
+    }
     data.part_number = String(data.part_number).toUpperCase()
     data.log_description = String(data.log_description).toUpperCase()
     data.man_description = String(data.man_description).toUpperCase()
