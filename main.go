@@ -24,6 +24,10 @@ type E struct {
 	Event string `json:"event"`
 }
 
+type ErrorHand struct {
+	Message string
+}
+
 type ID struct {
 	Id int64 `json:"id"`
 }
@@ -45,23 +49,8 @@ type GetAllCallsSocketInput struct {
 	Call *Companies
 }
 
-type GetCallSocketOutput struct {
-	*E
-	Call *db.Call `json:"call"`
-}
-
 type CreateCallSocketInput struct {
 	Call *db.CreateCallParams `json:"call"`
-}
-
-type GetAllCallsSocketOutput struct {
-	*E
-	Call *[]db.Call `json:"call"`
-}
-
-type CreateCallOutput struct {
-	*E
-	*db.Call `json:"call"`
 }
 
 type UpdateCallQualityInput struct {
@@ -69,19 +58,9 @@ type UpdateCallQualityInput struct {
 	Call *db.UpdateCallQualityParams `json:"call"`
 }
 
-type UpdateCallQualityOutput struct {
-	*E
-	Call *db.UpdateCallQualityRow `json:"call"`
-}
-
 type UpdateCallManInput struct {
 	*E
 	Call *db.UpdateCallManutParams `json:"call"`
-}
-
-type UpdateCallManOutput struct {
-	*E
-	Call *db.UpdateCallManutRow `json:"call"`
 }
 
 type UpdateCallEngInput struct {
@@ -89,19 +68,9 @@ type UpdateCallEngInput struct {
 	Call *db.UpdateCallEngParams `json:"call"`
 }
 
-type UpdateCallEngOutput struct {
-	*E
-	Call *db.UpdateCallEngRow `json:"call"`
-}
-
 type UpdateCallLogInput struct {
 	*E
 	Call *db.UpdateCallLogParams `json:"call"`
-}
-
-type UpdateCallLogOutput struct {
-	*E
-	Call db.UpdateCallLogRow `json:"call"`
 }
 
 var (
@@ -182,64 +151,47 @@ func handleWS(c echo.Context) error {
 
 		case string("getCall"):
 			var dataToStruct GetCallSocketInput
-			_ = json.Unmarshal(data, &dataToStruct)
+			err = json.Unmarshal(data, &dataToStruct)
 
-			call, err := use.GetCall(ctx, &dataToStruct.Call.IDCall, &dataToStruct.Call.Company)
+			call, err := use.GetCall(ctx, e.Event, &dataToStruct.Call.IDCall, &dataToStruct.Call.Company)
 			if err != nil {
 				fmt.Println(err)
 			}
 
-			var output GetCallSocketOutput
-
-			output.E = &e
-			output.Call = call
-
-			callJSON, err := json.MarshalIndent(&output, "", "  ")
-
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			client.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+			client.Write(c.Request().Context(), websocket.MessageText, []byte(call))
 
 		case string("getAllCalls"):
 			var dataToStruct GetAllCallsSocketInput
-			_ = json.Unmarshal(data, &dataToStruct)
+			err = json.Unmarshal(data, &dataToStruct)
 
-			calls, err := use.GetAllCalls(ctx, &dataToStruct.Call.Company)
 			if err != nil {
+				client.Write(c.Request().Context(), websocket.MessageText, []byte("a"))
+				fmt.Println(err)
+				return err
+			}
+
+			calls, err := use.GetAllCalls(ctx, e.Event, &dataToStruct.Call.Company)
+			if err != nil {
+
 				fmt.Println(err)
 			}
 
-			var output GetAllCallsSocketOutput
-
-			output.E = &e
-			output.Call = &calls
-
-			callsJSON, _ := json.MarshalIndent(&output, "", "  ")
-
-			client.Write(c.Request().Context(), websocket.MessageText, []byte(callsJSON))
+			client.Write(c.Request().Context(), websocket.MessageText, []byte(calls))
 
 		case string("createCall"):
 
 			var dataToStruct CreateCallSocketInput
-			_ = json.Unmarshal(data, &dataToStruct)
-
-			call, err := use.CreateCall(ctx, dataToStruct.Call)
-
+			err = json.Unmarshal(data, &dataToStruct)
+			if err != nil {
+				client.Write(c.Request().Context(), websocket.MessageText, []byte(string(`{ "error":  }`)))
+				return err
+			}
+			call, err := use.CreateCall(ctx, e.Event, dataToStruct.Call)
 			if err != nil {
 				fmt.Println(err)
 			}
-
-			var output CreateCallOutput
-
-			output.E = &e
-			output.Call = call
-
-			callJSON, _ := json.MarshalIndent(&output, "", "  ")
-
 			for cli := range clients {
-				cli.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+				cli.Write(c.Request().Context(), websocket.MessageText, []byte(call))
 			}
 
 		case string("updateCallQuality"):
@@ -247,21 +199,14 @@ func handleWS(c echo.Context) error {
 			var dataToStruct UpdateCallQualityInput
 			_ = json.Unmarshal(data, &dataToStruct)
 
-			call, err := use.UpdateCallQuality(ctx, dataToStruct.Call)
+			call, err := use.UpdateCallQuality(ctx, e.Event, dataToStruct.Call)
 
 			if err != nil {
 				fmt.Println(err)
 			}
 
-			var output UpdateCallQualityOutput
-
-			output.E = &e
-			output.Call = call
-
-			callJSON, _ := json.MarshalIndent(&output, "", "  ")
-
 			for cli := range clients {
-				cli.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+				cli.Write(c.Request().Context(), websocket.MessageText, []byte(call))
 			}
 
 		case string("updateCallLog"):
@@ -269,23 +214,14 @@ func handleWS(c echo.Context) error {
 			var dataToStruct UpdateCallLogInput
 			_ = json.Unmarshal(data, &dataToStruct)
 
-			call, err := use.UpdateCallLog(ctx, dataToStruct.Call)
+			call, err := use.UpdateCallLog(ctx, e.Event, dataToStruct.Call)
 
 			if err != nil {
 				fmt.Println(err)
 			}
 
-			var output UpdateCallLogOutput
-
-			output.E = &e
-			output.Call = *call
-
-			fmt.Println(output.Call == *call)
-
-			callJSON, _ := json.MarshalIndent(&output, "", "  ")
-
 			for cli := range clients {
-				cli.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+				cli.Write(c.Request().Context(), websocket.MessageText, []byte(call))
 			}
 
 		case string("updateCallEng"):
@@ -293,50 +229,31 @@ func handleWS(c echo.Context) error {
 			var dataToStruct UpdateCallEngInput
 			_ = json.Unmarshal(data, &dataToStruct)
 
-			call, err := use.UpdateCallEng(ctx, dataToStruct.Call)
+			call, err := use.UpdateCallEng(ctx, e.Event, dataToStruct.Call)
 
 			if err != nil {
 				fmt.Println(err)
 			}
 
-			var output UpdateCallEngOutput
-
-			output.E = &e
-			output.Call = call
-
-			fmt.Println(&output.Call == &call)
-
-			callJSON, _ := json.MarshalIndent(&output, "", "  ")
-
 			for cli := range clients {
-				cli.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+				cli.Write(c.Request().Context(), websocket.MessageText, []byte(call))
 			}
 		case string("updateCallMan"):
 
 			var dataToStruct UpdateCallManInput
 			_ = json.Unmarshal(data, &dataToStruct)
 
-			call, err := use.UpdateCallManut(ctx, dataToStruct.Call)
+			call, err := use.UpdateCallManut(ctx, e.Event, dataToStruct.Call)
 
 			if err != nil {
 				fmt.Println(err)
 			}
 
-			var output UpdateCallManOutput
-
-			output.E = &e
-			output.Call = call
-
-			fmt.Println(&output.Call == &call)
-
-			callJSON, _ := json.MarshalIndent(&output, "", "  ")
-
 			for cli := range clients {
-				cli.Write(c.Request().Context(), websocket.MessageText, []byte(callJSON))
+				cli.Write(c.Request().Context(), websocket.MessageText, []byte(call))
 			}
 
 		}
-
 	}
 	return err
 

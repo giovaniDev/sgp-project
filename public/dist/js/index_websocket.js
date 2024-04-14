@@ -17,6 +17,25 @@ let users = new Map()
 
 users.set(2477, "Giovani Rodrgues")
 
+navigator.serviceWorker.register("sw.js");
+
+function showNotification() {
+  Notification.requestPermission().then((result) => {
+    if (result === "granted") {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification("Vibration Sample", {
+          body: "Buzz! Buzz!",
+          icon: "../images/touch/chrome-touch-icon-192x192.png",
+          vibrate: [200, 100, 200, 100, 200, 100, 200],
+          tag: "vibration-sample",
+        });
+      });
+    }
+  });
+}
+
+showNotification()
+
 function displaySound(s) {
     const audio = new Audio(s)
     audio.autoplay = true
@@ -226,7 +245,6 @@ const listenWebSocket = () => {
     ws.onmessage = function(e) {
         let data = JSON.parse(e.data)
 
-
         if (data.event == "createCall") {
             const emptyMain = document.querySelector("main .emptyMain")
             if (emptyMain) {
@@ -254,6 +272,11 @@ const listenWebSocket = () => {
             }
             list = formatDateTimeList(data.call)
             renderAllCalls(list)
+            Notification.requestPermission().then((permission) => { 
+                if (permission == "granted") {
+                    console.log("granted")
+                }
+            });
             return 
         }
 
@@ -297,9 +320,6 @@ const listenWebSocket = () => {
             const index = list.findIndex(o => o.id_call === data.call.id_call)
             list[index].log_check_datetime_at = data.call.log_check_datetime_at
             list[index].log_check_id = data.call.log_check_id
-            Notification.requestPermission().then((result) => {
-                console.log(result);
-              });
             Notification.requestPermission().then((permission) => { 
                 if (permission == "granted") {
                     new Notification("Baixa", { body: "Requisição da logística numero " + data.call.id_call + " foi baixada"})
@@ -407,5 +427,4 @@ window.addEventListener("close", () => {
 
 createInformationMachine()
 getInformationMachine()
-
 listenWebSocket()

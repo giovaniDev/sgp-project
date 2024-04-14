@@ -2,21 +2,25 @@ package use
 
 import (
 	"context"
+	"encoding/json"
 	"ordora/internal/db"
 )
 
-func UpdateCallQuality(ctx context.Context, input *db.UpdateCallQualityParams) (*db.UpdateCallQualityRow, error) {
+func UpdateCallQuality(ctx context.Context, event string, input *db.UpdateCallQualityParams) (string, error) {
 
 	conn, err := ConnectDB()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
+	defer conn.Close()
+
 	querie := db.New(conn)
 	call, err := querie.UpdateCallQuality(ctx, *input)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	conn.Close()
 
-	return &call, err
+	callsJSON, _ := json.MarshalIndent(map[string]interface{}{"event": event, "call": &call}, "", "  ")
+
+	return string(callsJSON), err
 }

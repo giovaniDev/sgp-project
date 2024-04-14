@@ -2,21 +2,23 @@ package use
 
 import (
 	"context"
+	"encoding/json"
 	"ordora/internal/db"
 )
 
-func UpdateCallManut(ctx context.Context, input *db.UpdateCallManutParams) (*db.UpdateCallManutRow, error) {
+func UpdateCallManut(ctx context.Context, event string, input *db.UpdateCallManutParams) (string, error) {
 
 	conn, err := ConnectDB()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
+	defer conn.Close()
 	querie := db.New(conn)
 	call, err := querie.UpdateCallManut(ctx, *input)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	conn.Close()
+	callsJSON, _ := json.MarshalIndent(map[string]interface{}{"event": event, "call": &call}, "", "  ")
 
-	return &call, err
+	return string(callsJSON), err
 }
